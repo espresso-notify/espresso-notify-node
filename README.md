@@ -71,6 +71,10 @@ It throws `EspressoNotifySignatureError` (`signature_mismatch`, `timestamp_out_o
 
 The guide, with the examples compiled against this source, is at https://docs.espressonotify.com/docs/server-libraries/node.
 
+- Framework recipes (Express, Fastify, NestJS, Next.js): https://docs.espressonotify.com/docs/server-libraries/node-recipes
+- Reference of every method, error and option: https://docs.espressonotify.com/docs/server-libraries/node-reference
+- Moving from direct `fetch` calls to the library: https://docs.espressonotify.com/docs/server-libraries/node-migrate
+
 ## Where the code comes from
 
 `src/generated/` is generated from `docs-site/public/openapi/v1.yaml` of the Espresso Notify repository by a pinned `openapi-generator`; the hand-written layer is the rest of `src/`. The tests read the requests and the answers from `fixtures/`, which the API's own tests write from its real routes.

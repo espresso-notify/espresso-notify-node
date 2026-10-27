@@ -5,6 +5,12 @@ All notable changes to `@espresso-notify/node` are written here. The format foll
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-27
+
+### Changed
+
+- The README links to the framework recipes, the method reference and the migration guide from direct API calls.
+
 ## [0.1.0] - 2026-10-27
 
 ### Added
