@@ -1,0 +1,31 @@
+{
+  "description": "The idempotency_key was used with another body.",
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendTransactional",
+  "path": "/v1/notifications/transactional",
+  "pathTemplate": "/v1/notifications/transactional",
+  "request": {
+    "body": {
+      "body": "Order 8123 is on its way",
+      "idempotency_key": "order-8123-shipped",
+      "title": "Your order was delayed",
+      "to": {
+        "external_id": "user-1001"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "code": "idempotency_key_reused",
+      "error": "idempotency_key_reused"
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 422
+  }
+}

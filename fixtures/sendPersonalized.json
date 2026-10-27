@@ -1,0 +1,74 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendPersonalized",
+  "path": "/v1/notifications/personalized",
+  "pathTemplate": "/v1/notifications/personalized",
+  "request": {
+    "body": {
+      "body": "Three new offers for you",
+      "external_ids": [
+        "user-1001",
+        "user-unknown"
+      ],
+      "idempotency_key": "weekly-2023-11-14",
+      "title": "Your weekly summary"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "ab_test_group_id": null,
+      "badge": 0,
+      "body": "Three new offers for you",
+      "capped_count": 0,
+      "category_id": "",
+      "clicked_count": 0,
+      "converted_count": 0,
+      "created_at": "2023-11-14T22:13:20Z",
+      "delivery_class": "transactional",
+      "dismissed_count": 0,
+      "error_count": 0,
+      "holdout_pct": 0,
+      "id": 1,
+      "idempotency_key": "weekly-2023-11-14",
+      "image_url": "",
+      "influenced_open_count": 0,
+      "intelligent_timing": false,
+      "not_found_ids": [
+        "user-unknown"
+      ],
+      "opened_count": 0,
+      "opt_out_count": 0,
+      "overridden_count": 0,
+      "payload": "",
+      "priority": "",
+      "project_id": 1,
+      "public_id": "00000000-0000-4000-8000-000000000001",
+      "quiet_hours_count": 0,
+      "revenue_brl_minor": 0,
+      "revenue_txn_count": 0,
+      "scheduled_for": null,
+      "sent_count": 0,
+      "sound": "",
+      "status": "processing",
+      "targets_found": 1,
+      "targets_not_found": 1,
+      "targets_requested": 2,
+      "template_name": "",
+      "tenant_id": "c0c0c0c0-0000-4000-8000-000000000001",
+      "title": "Your weekly summary",
+      "total_tokens": 0,
+      "ttl": 0,
+      "type": "personalized",
+      "updated_at": "2023-11-14T22:13:20Z",
+      "variant": ""
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 202
+  }
+}

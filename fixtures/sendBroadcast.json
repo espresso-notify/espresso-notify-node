@@ -1,0 +1,65 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendBroadcast",
+  "path": "/v1/notifications/broadcast",
+  "pathTemplate": "/v1/notifications/broadcast",
+  "request": {
+    "body": {
+      "body": "Two hours left",
+      "idempotency_key": "spring-sale-2023-11-14",
+      "payload": "{\"screen\":\"offers\"}",
+      "title": "Flash sale"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "ab_test_group_id": null,
+      "badge": 0,
+      "body": "Two hours left",
+      "capped_count": 0,
+      "category_id": "",
+      "clicked_count": 0,
+      "converted_count": 0,
+      "created_at": "2023-11-14T22:13:20Z",
+      "delivery_class": "campaign",
+      "dismissed_count": 0,
+      "error_count": 0,
+      "holdout_pct": 0,
+      "id": 1,
+      "idempotency_key": "spring-sale-2023-11-14",
+      "image_url": "",
+      "influenced_open_count": 0,
+      "intelligent_timing": false,
+      "opened_count": 0,
+      "opt_out_count": 0,
+      "overridden_count": 0,
+      "payload": "{\"screen\":\"offers\"}",
+      "priority": "",
+      "project_id": 1,
+      "public_id": "00000000-0000-4000-8000-000000000001",
+      "quiet_hours_count": 0,
+      "revenue_brl_minor": 0,
+      "revenue_txn_count": 0,
+      "scheduled_for": null,
+      "sent_count": 0,
+      "sound": "",
+      "status": "processing",
+      "template_name": "",
+      "tenant_id": "c0c0c0c0-0000-4000-8000-000000000001",
+      "title": "Flash sale",
+      "total_tokens": 2,
+      "ttl": 0,
+      "type": "broadcast",
+      "updated_at": "2023-11-14T22:13:20Z",
+      "variant": ""
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 202
+  }
+}

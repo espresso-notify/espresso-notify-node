@@ -1,0 +1,309 @@
+name: Publish @espresso-notify/node to npm (provenance)
+
+# STAGES @espresso-notify/node on npm WITH provenance (`npm stage publish --provenance`, signed by GitHub through OIDC) from the code of this
+# public repository. Provenance is the reason this repository is public: npm only signs it for a public source repository, and the
+# statement links each published version to the commit and the run. This file is copied here from the private monorepo on every sync
+# (`sdk-server/node/.github/workflows/publish.yml`); do not edit it here, the next sync replaces it.
+#
+# The normal path never publishes. The Trusted Publisher of the package is registered WITHOUT "Allow npm publish", so the workflow can only stage:
+# the version waits on npm, not public, until a maintainer approves it with 2FA, on npmjs.com (the package page, tab "Staged Packages",
+# button "Approve") or with `npm stage approve <stage-id>` (`npm stage list @espresso-notify/node` shows the id). Approving needs a person.
+#
+# What the repository must keep (the owner sets these up once; see the task T16 of .specs/features/server-libraries in the monorepo):
+#   1. npm: own the `@espresso-notify` scope, turn on 2FA and register THIS workflow (`publish.yml`, environment `npm-publish`) as the
+#      "Trusted Publisher" of the package, allowing only `npm stage publish` (no token). Or create a granular token for the package and
+#      store it as the secret `NPM_TOKEN` of the environment `npm-publish`. The package must already exist on npm.
+#   2. GitHub: create the environment `npm-publish` with required reviewers, limited to `main` and to the tags `v*`.
+#   3. GitHub: create the repository variable `NPM_PUBLISH_ENABLED` with the value `true`. Without it the job is skipped.
+#   4. `repository.url` of `package.json` must be this repository (npm refuses the provenance otherwise).
+#
+# The FIRST publish of a package is the one exception. Staged publishing needs the package to exist on npm already, and a package is
+# created by its first publish, so a manual run with `first_publish` ON does `npm publish --provenance --access public` once, with the
+# token NPM_TOKEN of the environment `npm-publish` (the way @espresso-notify/react-native 0.0.1 went out). It runs only by hand, only from
+# the tag `vX.Y.Z` of the version in `package.json` (Run workflow > Use workflow from > Tags > v0.1.0), only with `dry_run` OFF to upload,
+# and it FAILS if the package already exists on npm, so it can never publish a second version. Afterwards: register the Trusted Publisher
+# (allowing only `npm stage publish`) and DELETE the token and the secret; every later release goes by the stage path below.
+#
+# How to use it once set up:
+#   - By tag: `git tag v0.1.0` and `git push origin v0.1.0`. The tag must be the version in `package.json` (without the `v`) and
+#     `CHANGELOG.md` must have a `## [0.1.0]` section; if either is not true the run fails BEFORE it installs anything, builds or stages.
+#   - By hand: Actions > "Publish @espresso-notify/node" > Run workflow, on `main`. `dry_run` is ON by default and ends in
+#     `npm stage publish --dry-run`. The changelog section of the version in `package.json` is still required.
+#   - First publish: Actions > "Publish @espresso-notify/node" > Run workflow, "Use workflow from" the tag `v0.1.0`, `first_publish` ON,
+#     `dry_run` OFF. Needs the secret NPM_TOKEN in the environment `npm-publish` (a granular token that can create the package).
+#
+# Two jobs, so that the code that runs the tests never holds the permission to sign:
+#   verify  checks the tag, the version, the changelog, the repository and that the commit is on `main`, installs with
+#           `npm ci --ignore-scripts`, type checks, tests, builds and checks that the tarball holds only the allowed files. It has
+#           read-only permissions, no environment and no secret; the build is handed on as an artifact of the run.
+#   stage   needs verify, runs in the protected environment, is the only job with `id-token: write`, and only downloads that build,
+#           checks the tarball again and runs `npm stage publish --provenance --access public --ignore-scripts` (or, for the first
+#           publish only, `npm publish --provenance --access public --ignore-scripts`). It installs nothing and runs no test: no
+#           dependency and no test file ever executes with the token of the OIDC.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: do everything except the final upload'
+        type: boolean
+        default: true
+      first_publish:
+        description: 'First publish of the package (npm publish with the token NPM_TOKEN). Only from the tag vX.Y.Z; fails if the package exists'
+        type: boolean
+        default: false
+  push:
+    tags:
+      - 'v[0-9]*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-node
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: verify @espresso-notify/node
+    # Without the variable NPM_PUBLISH_ENABLED the workflow does not even run (inert workflow).
+    if: vars.NPM_PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Read only, and no environment: this job has no secret and cannot sign anything.
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # needs the history to prove that the commit is on main
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+          # no npm cache here: a cache written by another job must not feed the job that publishes
+
+      # The first step, with no install and no build before it: a tag that does not match the version, or a version with no
+      # changelog section, stops the run here.
+      - name: Check the tag, the version and the changelog
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          FIRST_PUBLISH: ${{ github.event_name == 'workflow_dispatch' && inputs.first_publish || 'false' }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          name=$(node -p "require('./package.json').name")
+          echo "package: $name@$version"
+
+          # The first publish is only for the tag of the version: nothing else may create the package.
+          if [ "${FIRST_PUBLISH:-false}" = "true" ]; then
+            if [ "${REF_TYPE:-}" != "tag" ] || [ "$REF_NAME" != "v$version" ]; then
+              echo "first_publish must run from the tag v$version (Use workflow from > Tags > v$version); this run is on ${REF_TYPE:-?} $REF_NAME" >&2
+              exit 1
+            fi
+          fi
+
+          if [ "$EVENT_NAME" = "push" ]; then
+            expected="${REF_NAME#v}"
+            if [ "$version" != "$expected" ]; then
+              echo "tag $REF_NAME says $expected but package.json says $version" >&2
+              exit 1
+            fi
+          fi
+
+          if ! grep -qF "## [$version]" CHANGELOG.md; then
+            echo "CHANGELOG.md has no '## [$version]' section: write the release notes of $version before publishing it" >&2
+            exit 1
+          fi
+
+      - name: Check the repository and that the commit is on main
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REPOSITORY_PRIVATE: ${{ github.event.repository.private }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          # npm signs provenance only for a public repository.
+          if [ "$REPOSITORY_PRIVATE" != "false" ]; then
+            echo "This repository is not public (private=$REPOSITORY_PRIVATE): npm does not sign provenance for a private repository." >&2
+            exit 1
+          fi
+
+          # npm rejects a provenance statement whose source repository differs from package.json.
+          url=$(node -p "((require('./package.json').repository || {}).url || '')")
+          norm=$(printf '%s' "$url" | sed -E 's#^git\+##; s#\.git$##; s#^git@github\.com:#https://github.com/#' | tr 'A-Z' 'a-z')
+          want=$(printf 'https://github.com/%s' "$REPOSITORY" | tr 'A-Z' 'a-z')
+          if [ "$norm" != "$want" ]; then
+            echo "package.json repository.url is '$url' but this repository is $want." >&2
+            echo "Align repository.url with the GitHub repository (or move the code) before publishing: npm refuses the provenance otherwise." >&2
+            exit 1
+          fi
+
+          git fetch --quiet origin main
+          if ! git merge-base --is-ancestor "$COMMIT" origin/main; then
+            echo "commit $COMMIT is not on main; publish only what is on main" >&2
+            exit 1
+          fi
+
+      - name: Install (no install scripts)
+        run: npm ci --ignore-scripts
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: The tarball holds only the allowed files
+        run: npm run check:pack
+
+      # The build that was tested is the build that is staged: it travels as an artifact of this run, one day.
+      - name: Keep the build for the stage job
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: package-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+
+  stage:
+    name: stage @espresso-notify/node
+    needs: verify
+    if: vars.NPM_PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Protected environment: required reviewers and the NPM_TOKEN secret (if a token is used) live here.
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write # OIDC: signs the provenance (and is the login of the Trusted Publisher, if used). Only this job has it.
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # needs the history to prove that the commit is on main
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          # no npm cache here: a cache written by another job must not feed the job that publishes
+
+      - name: Check the npm version
+        run: |
+          set -euo pipefail
+          have=$(npm --version)
+          node_have=$(node --version | sed 's/^v//')
+          echo "npm $have, node $node_have"
+          # `npm stage` exists from npm 11.15.0 and needs Node 22.14.0 or newer.
+          lowest=$(printf '%s\n%s\n' "11.15.0" "$have" | sort -V | head -n 1)
+          if [ "$lowest" != "11.15.0" ]; then
+            echo "npm $have is older than 11.15.0, which is the first with the command 'npm stage'; use a newer Node (22.14.0 or newer, with its npm updated)." >&2
+            exit 1
+          fi
+          lowest=$(printf '%s\n%s\n' "22.14.0" "$node_have" | sort -V | head -n 1)
+          if [ "$lowest" != "22.14.0" ]; then
+            echo "node $node_have is older than 22.14.0, which staged publishing needs." >&2
+            exit 1
+          fi
+
+      - name: Take the build that was tested
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: package-dist
+          path: dist
+
+      - name: The tarball holds only the allowed files
+        run: npm run check:pack
+
+      # Stages, never publishes: the version is not public until a maintainer approves it with 2FA (see the header).
+      # The first publish of the package: the one place where a token publishes. Only by hand (first_publish is an input of
+      # workflow_dispatch), only for a package that does not exist on npm yet.
+      - name: First publish only - the package must not exist on npm yet
+        if: github.event_name == 'workflow_dispatch' && inputs.first_publish
+        run: |
+          set -euo pipefail
+          name=$(node -p "require('./package.json').name")
+          # No credential for this question: an empty user config, so the placeholder token of setup-node is not sent.
+          if out=$(npm view "$name" version --registry https://registry.npmjs.org --userconfig "$(mktemp)" 2>&1); then
+            echo "$name already exists on npm (version $out): first_publish is for the first version only. Use the tag path, which stages." >&2
+            exit 1
+          fi
+          if ! printf '%s' "$out" | grep -q 'E404'; then
+            echo "could not tell whether $name exists on npm: $out" >&2
+            exit 1
+          fi
+          echo "$name does not exist on npm yet"
+
+      - name: First publish with provenance
+        if: github.event_name == 'workflow_dispatch' && inputs.first_publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "The secret NPM_TOKEN of the environment npm-publish is empty: create a granular token that can create $name and store it there before the first publish." >&2
+            exit 1
+          fi
+          args=(--provenance --access public --ignore-scripts)
+          if [ "$DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+            echo "dry run: nothing is uploaded"
+          fi
+          npm publish "${args[@]}"
+          if [ "$DRY_RUN" = "true" ]; then
+            {
+              echo "### Dry run of the first publish of $name@$version"
+              echo
+              echo "Nothing was published."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### $name@$version is published (first publish, with provenance)"
+              echo
+              echo "Now close the way that was only for this run:"
+              echo
+              echo "1. On npmjs.com open https://www.npmjs.com/package/$name, Settings, and register the Trusted Publisher: this repository, the workflow \`publish.yml\`, the environment \`npm-publish\`, allowing only \`npm stage publish\` (not \"Allow npm publish\")."
+              echo "2. Delete the secret NPM_TOKEN from the environment \`npm-publish\` and revoke the token on npmjs.com."
+              echo "3. Every later release goes by a tag and is only staged, until a maintainer approves it."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Stage with provenance
+        if: github.event_name != 'workflow_dispatch' || !inputs.first_publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # A tag stages for real; a manual run follows its dry_run input (default: true).
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          args=(--provenance --access public --ignore-scripts)
+          if [ "$DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+            echo "dry run: nothing is uploaded"
+          fi
+          npm stage publish "${args[@]}"
+          if [ "$DRY_RUN" = "true" ]; then
+            {
+              echo "### Dry run of $name@$version"
+              echo
+              echo "Nothing was staged and nothing is public."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### $name@$version is staged, not public"
+              echo
+              echo "The workflow only stages. The version is public only after a maintainer approves it with 2FA:"
+              echo
+              echo "1. On npmjs.com open https://www.npmjs.com/package/$name, the tab **Staged Packages**, and click **Approve**."
+              echo "2. Or from a terminal: \`npm stage list $name\` shows the stage id, then \`npm stage approve <stage-id>\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

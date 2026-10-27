@@ -1,0 +1,30 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "recordConversion",
+  "path": "/v1/conversions",
+  "pathTemplate": "/v1/conversions",
+  "request": {
+    "body": {
+      "currency": "BRL",
+      "external_txn_id": "txn-5001",
+      "push_token": "ExponentPushToken[contractDevice1001]",
+      "value": 4990
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "attributed_notification_id": 1,
+      "currency": "BRL",
+      "status": "recorded",
+      "value_minor": 4990
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 201
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendTransactionalBatch",
+  "path": "/v1/notifications/transactional/batch",
+  "pathTemplate": "/v1/notifications/transactional/batch",
+  "request": {
+    "body": {
+      "items": [
+        {
+          "body": "Order 8123 is on its way",
+          "idempotency_key": "order-8123-shipped",
+          "title": "Your order shipped",
+          "to": {
+            "external_id": "user-1001"
+          }
+        },
+        {
+          "body": "Order 8124 is on its way",
+          "idempotency_key": "order-8124-shipped",
+          "title": "Your order shipped",
+          "to": {
+            "external_id": "user-1002"
+          }
+        },
+        {
+          "body": "Order 8125 is on its way",
+          "idempotency_key": "order-8125-shipped",
+          "title": "Your order shipped",
+          "to": {
+            "external_id": "user-unknown"
+          }
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "accepted": 2,
+      "duplicate_ignored": 0,
+      "rejected": 1,
+      "results": [
+        {
+          "error": null,
+          "id": 1,
+          "index": 0,
+          "public_id": "00000000-0000-4000-8000-000000000001",
+          "status": "accepted",
+          "type": "transactional"
+        },
+        {
+          "error": null,
+          "id": 2,
+          "index": 1,
+          "public_id": "00000000-0000-4000-8000-000000000002",
+          "status": "accepted",
+          "type": "transactional"
+        },
+        {
+          "error": {
+            "code": "target_users_not_found",
+            "message": "Target user not found"
+          },
+          "id": null,
+          "index": 2,
+          "public_id": null,
+          "status": "rejected",
+          "type": null
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 202
+  }
+}

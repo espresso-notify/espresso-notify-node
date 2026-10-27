@@ -1,0 +1,27 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "queryPreferences",
+  "path": "/v1/preferences/query",
+  "pathTemplate": "/v1/preferences/query",
+  "request": {
+    "body": {
+      "external_id": "user-1001"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": [
+      {
+        "category_identifier": "offer_actions",
+        "opted_out": true
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 200
+  }
+}

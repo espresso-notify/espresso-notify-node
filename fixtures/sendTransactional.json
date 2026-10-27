@@ -1,0 +1,33 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendTransactional",
+  "path": "/v1/notifications/transactional",
+  "pathTemplate": "/v1/notifications/transactional",
+  "request": {
+    "body": {
+      "body": "Order 8123 is on its way",
+      "idempotency_key": "order-8123-shipped",
+      "template_name": "order_shipped",
+      "title": "Your order shipped",
+      "to": {
+        "external_id": "user-1001"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "id": 1,
+      "public_id": "00000000-0000-4000-8000-000000000001",
+      "status": "processing",
+      "type": "transactional"
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 202
+  }
+}

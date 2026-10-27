@@ -1,0 +1,29 @@
+{
+  "description": "A send without a title is refused with a code.",
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendTransactional",
+  "path": "/v1/notifications/transactional",
+  "pathTemplate": "/v1/notifications/transactional",
+  "request": {
+    "body": {
+      "body": "Order 8123 is on its way",
+      "to": {
+        "external_id": "user-1001"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "code": "title_required",
+      "error": "title is required"
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 400
+  }
+}

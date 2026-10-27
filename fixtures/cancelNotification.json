@@ -1,0 +1,24 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "cancelNotification",
+  "path": "/v1/notifications/1/cancel",
+  "pathParams": {
+    "id": "1"
+  },
+  "pathTemplate": "/v1/notifications/{id}/cancel",
+  "request": {},
+  "response": {
+    "body": {
+      "already_cancelled": false,
+      "cancelled_at": "2023-11-14T22:13:20Z",
+      "id": 1,
+      "started": false,
+      "status": "cancelled"
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 200
+  }
+}

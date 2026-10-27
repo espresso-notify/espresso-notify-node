@@ -1,0 +1,22 @@
+{
+  "description": "No notification of the project has this id.",
+  "key": "secret",
+  "method": "GET",
+  "operationId": "getNotification",
+  "path": "/v1/notifications/999",
+  "pathParams": {
+    "id": "999"
+  },
+  "pathTemplate": "/v1/notifications/{id}",
+  "request": {},
+  "response": {
+    "body": {
+      "code": "notification_not_found",
+      "error": "notification_not_found"
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 404
+  }
+}

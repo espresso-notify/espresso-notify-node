@@ -1,0 +1,23 @@
+# The operations the server libraries cover, by operationId in docs-site/public/openapi/v1.yaml.
+# One list shared by every language (server-libraries SRVL-01). A name missing from the contract fails the filter.
+# The 18 public-key app routes and track-web belong to the app SDKs and are not listed.
+
+# notifications (secret key)
+sendBroadcast
+sendPersonalized
+sendTransactional
+sendTransactionalBatch
+getNotification
+cancelNotification
+
+# users, devices, events, journeys (secret key)
+createUser
+addToken
+recordConversion
+enterJourney
+
+# preferences and catalog reads (either key)
+setPreferences
+queryPreferences
+listCategories
+listVariables

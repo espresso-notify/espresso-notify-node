@@ -1,0 +1,38 @@
+{
+  "key": "secret",
+  "method": "GET",
+  "operationId": "listCategories",
+  "path": "/v1/notifications/categories",
+  "pathTemplate": "/v1/notifications/categories",
+  "request": {},
+  "response": {
+    "body": [
+      {
+        "actions": [
+          {
+            "buttonTitle": "View offer",
+            "identifier": "view",
+            "isDestructive": false,
+            "opensAppToForeground": true
+          }
+        ],
+        "identifier": "offer_actions"
+      },
+      {
+        "actions": [
+          {
+            "buttonTitle": "Track order",
+            "identifier": "track",
+            "isDestructive": false,
+            "opensAppToForeground": true
+          }
+        ],
+        "identifier": "order_update"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "description": "301 seconds old is outside the default tolerance.",
+  "expected": {
+    "error": "timestamp_out_of_tolerance",
+    "valid": false
+  },
+  "input": {
+    "body": "{\"event\":\"notification.sent\",\"notification_id\":8123,\"public_id\":\"0b8d9c1e-5a2f-4c63-9e17-3d4f5a6b7c80\",\"title\":\"Promoção relâmpago ☕\",\"body\":\"Faltam duas horas <b>&</b> pouco mais\",\"push_token\":\"ExponentPushToken[contractDevice1001]\",\"timestamp\":\"2023-11-14T22:13:20Z\"}",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Espresso-Delivery-Id": "a3f1c2d4-9b8e-4c7a-8f21-5d6e7a8b9c01",
+      "X-Espresso-Event": "notification.sent",
+      "X-Espresso-Payload-Version": "2026-06-01",
+      "X-Espresso-Signature": "t=1699999699,v1=1c4b1eaabc4e381c30630a251674669f8b8e52206bb7527141f5eb232f0f7808",
+      "X-Espresso-Timestamp": "1699999699"
+    },
+    "now": 1700000000,
+    "secrets": [
+      "contract-webhook-secret-current"
+    ]
+  },
+  "name": "hmac_timestamp_beyond_tolerance",
+  "scheme": "hmac_sha256"
+}

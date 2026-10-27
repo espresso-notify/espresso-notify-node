@@ -1,0 +1,22 @@
+{
+  "description": "An event stream batch whose body changed after signing.",
+  "expected": {
+    "error": "signature_mismatch",
+    "valid": false
+  },
+  "input": {
+    "body": "{\"events\":[{\"event\":\"notification.sent\",\"notification_id\":8124},{\"event\":\"notification.opened\",\"notification_id\":8123}]}",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Espresso-Batch-Id": "b4e2d3c5-0a9f-4d8b-9e32-6e7f8b9ca012",
+      "X-Espresso-Signature": "t=1700000000,v1=80d4f6b0cec24f162e1a1b76156ce261c970a925b9cc3828d47cbf763d7195d1",
+      "X-Espresso-Timestamp": "1700000000"
+    },
+    "now": 1700000000,
+    "secrets": [
+      "contract-webhook-secret-current"
+    ]
+  },
+  "name": "event_stream_tampered_body",
+  "scheme": "hmac_sha256"
+}

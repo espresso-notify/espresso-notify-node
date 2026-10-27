@@ -1,0 +1,31 @@
+{
+  "description": "A network that sent too many wrong keys is slowed down; Retry-After says for how long.",
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendTransactional",
+  "path": "/v1/notifications/transactional",
+  "pathTemplate": "/v1/notifications/transactional",
+  "request": {
+    "body": {
+      "body": "Order 8123 is on its way",
+      "idempotency_key": "order-8123-shipped",
+      "title": "Your order shipped",
+      "to": {
+        "external_id": "user-1001"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "error": "Muitas requisições em pouco tempo. Aguarde um momento e tente novamente."
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Retry-After": "30"
+    },
+    "status": 429
+  }
+}

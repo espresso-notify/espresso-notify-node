@@ -1,0 +1,30 @@
+{
+  "description": "The key is not one the API issued; the answer has no code.",
+  "key": "secret",
+  "method": "POST",
+  "operationId": "sendTransactional",
+  "path": "/v1/notifications/transactional",
+  "pathTemplate": "/v1/notifications/transactional",
+  "request": {
+    "body": {
+      "body": "Order 8123 is on its way",
+      "idempotency_key": "order-8123-shipped",
+      "title": "Your order shipped",
+      "to": {
+        "external_id": "user-1001"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "error": "Token de projeto inválido ou revogado"
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 401
+  }
+}

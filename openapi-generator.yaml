@@ -1,0 +1,25 @@
+# Generator config for @espresso-notify/node, read by sdk-server/tools/generate.py (server-libraries SRVL-01).
+# The contract is the subset of docs-site/public/openapi/v1.yaml listed in sdk-server/operations.txt.
+generatorName: typescript-fetch
+# Where the committed generated code lives, relative to this folder. The drift check diffs this folder.
+outputDir: src/generated
+generateMetadata: false
+additionalProperties:
+  # Bodies keep the API's snake_case names (idempotency_key, external_user_id), as the guides show them.
+  modelPropertyNaming: original
+  supportsES6: true
+  withInterfaces: true
+  # Models and APIs sit directly in outputDir (apis/, models/, runtime.ts, index.ts).
+  sourceFolder: ""
+# The generator would call the Error schema ModelError.
+modelNameMappings:
+  Error: ApiErrorBody
+globalProperties:
+  # Naming any of apis, models or supportingFiles turns the others off, so each one is named.
+  apis: ""
+  models: ""
+  supportingFiles: runtime.ts,index.ts
+  apiTests: false
+  modelTests: false
+  apiDocs: false
+  modelDocs: false

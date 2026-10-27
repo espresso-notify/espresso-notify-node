@@ -1,0 +1,30 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "setPreferences",
+  "path": "/v1/preferences",
+  "pathTemplate": "/v1/preferences",
+  "request": {
+    "body": {
+      "external_id": "user-1001",
+      "preferences": [
+        {
+          "category_identifier": "offer_actions",
+          "opted_out": true
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "updated": 1
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 200
+  }
+}

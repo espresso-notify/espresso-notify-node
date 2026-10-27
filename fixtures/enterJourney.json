@@ -1,0 +1,27 @@
+{
+  "key": "secret",
+  "method": "POST",
+  "operationId": "enterJourney",
+  "path": "/v1/journeys/5a1f0c9e-3b7d-4e2a-9c61-0d8e7b2f4a10/enter",
+  "pathParams": {
+    "public_id": "5a1f0c9e-3b7d-4e2a-9c61-0d8e7b2f4a10"
+  },
+  "pathTemplate": "/v1/journeys/{public_id}/enter",
+  "request": {
+    "body": {
+      "external_id": "user-1001"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "response": {
+    "body": {
+      "entered": true
+    },
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "status": 202
+  }
+}
