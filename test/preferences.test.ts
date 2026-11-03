@@ -56,3 +56,7 @@ describe("preferences by user", () => {
     expect([noUser, noPreferences]).toHaveLength(2);
   });
 });
+
+// feature: metadata.preferences
+
+// feature: server.catalog-reads

@@ -185,3 +185,5 @@ describe("secrets stay out of errors and logs (SRVL-03 AC7)", () => {
     expect(written).toEqual([]);
   });
 });
+
+// feature: server.client

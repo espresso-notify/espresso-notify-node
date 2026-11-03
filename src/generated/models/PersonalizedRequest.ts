@@ -84,7 +84,7 @@ export interface PersonalizedRequest {
      */
     web_url?: string;
     /**
-     * 
+     * Web Push icon. Without it the push carries the logo of the project, when the project has one.
      */
     icon_url?: string;
     /**

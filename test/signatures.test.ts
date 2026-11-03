@@ -190,3 +190,5 @@ describe("empty verification keys are refused", () => {
     expect(code(() => run({ secret: undefined }))).toBe("missing_verification_key");
   });
 });
+
+// feature: server.verify-signature

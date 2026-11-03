@@ -32,3 +32,5 @@ describe("constant-time comparison", () => {
     ]);
   });
 });
+
+// feature: server.verify-signature

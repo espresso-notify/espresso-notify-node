@@ -20,7 +20,8 @@
   },
   "response": {
     "body": {
-      "error": "Muitas requisições em pouco tempo. Aguarde um momento e tente novamente."
+      "code": "rate_limited",
+      "error": "Too many requests in a short period. Please wait a moment and try again."
     },
     "headers": {
       "Content-Type": "application/json; charset=utf-8",

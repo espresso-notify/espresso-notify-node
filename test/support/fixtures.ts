@@ -23,10 +23,12 @@ export function fixture(operationId: string): Fixture {
 }
 
 export function allFixtures(): Fixture[] {
+  // The folder also holds files that are not an operation (identity-token.json, written by the identity test).
   return readdirSync(dir!)
     .filter((name) => name.endsWith(".json"))
     .sort()
-    .map((name) => fixture(name.slice(0, -".json".length)));
+    .map((name) => fixture(name.slice(0, -".json".length)))
+    .filter((f) => typeof f.operationId === "string");
 }
 
 export interface SignatureCase {

@@ -1,0 +1,50 @@
+{
+  "types": {
+    "AddedToken": [],
+    "BroadcastResult": [],
+    "CancelResult": [],
+    "Category": [],
+    "ConversionResult": [],
+    "CreatedUser": [],
+    "EnterJourneyResult": [],
+    "EspressoNotify": [
+      "categories",
+      "conversions",
+      "journeys",
+      "notifications",
+      "preferences",
+      "tokens",
+      "users",
+      "variables"
+    ],
+    "EspressoNotifyAbortError": [],
+    "EspressoNotifyApiError": [
+      "error",
+      "requestId",
+      "retryAfterSeconds",
+      "status"
+    ],
+    "EspressoNotifyConfigError": [
+      "code"
+    ],
+    "EspressoNotifyError": [
+      "code"
+    ],
+    "EspressoNotifySignatureError": [
+      "code"
+    ],
+    "NotificationStatus": [],
+    "PersonalizedResult": [],
+    "Preference": [],
+    "SetPreferencesResult": [],
+    "TransactionalBatchResult": [],
+    "TransactionalResult": [],
+    "Variable": [],
+    "Wire": []
+  },
+  "functions": [
+    "VERSION",
+    "signIdentityToken",
+    "verifySignature"
+  ]
+}

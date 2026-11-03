@@ -61,9 +61,18 @@ describe("an error status becomes EspressoNotifyApiError (SRVL-04 AC1)", () => {
 
   it("gives code unknown to a JSON body that names none, and keeps its error text", async () => {
     const f = errorFixture("error_401_invalid_key");
-    const server = await serve(() => refused(f));
+    const { code: _code, ...withoutCode } = f.response.body as { code?: string; error: string };
+    const server = await serve(() => ({ status: f.response.status, headers: f.response.headers, body: withoutCode }));
     const error = (await failureOf(call(new EspressoNotify({ apiKey: KEY, baseUrl: server.baseUrl })))) as EspressoNotifyApiError;
     expect(error.code).toBe("unknown");
+    expect(error.error).toBe(f.response.body.error);
+  });
+
+  it("reads the code of a refused key (I18N-31: every /v1 error carries one)", async () => {
+    const f = errorFixture("error_401_invalid_key");
+    const server = await serve(() => refused(f));
+    const error = (await failureOf(call(new EspressoNotify({ apiKey: KEY, baseUrl: server.baseUrl })))) as EspressoNotifyApiError;
+    expect(error.code).toBe("project_token_invalid_or_revoked");
     expect(error.error).toBe(f.response.body.error);
   });
 

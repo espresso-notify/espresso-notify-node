@@ -67,6 +67,22 @@ const event = verifySignature({ body, headers, secret: process.env.ESPRESSO_WEBH
 
 It throws `EspressoNotifySignatureError` (`signature_mismatch`, `timestamp_out_of_tolerance`, `missing_header` or `raw_body_required`) when the request must not be trusted, and refuses an empty secret or key.
 
+### Sign an identity token
+
+```ts
+import { signIdentityToken } from '@espresso-notify/node'
+
+// After your user logs in: hand the result to the app, which gives it to the SDK
+const identityToken = signIdentityToken({
+  privateKeyPem: process.env.ESPRESSO_IDENTITY_PRIVATE_KEY!, // shown once in the dashboard when you generate the key
+  kid: 'ik_0123456789abcdef', // the key id the dashboard shows next to the key
+  projectId: '5f0c1d52-1e83-4a4c-9d6b-8f3a1c2b7e90', // the public id of the project
+  externalId: 'user-1001', // the user id you give the SDK
+})
+```
+
+The token is an `ES256` JWT valid for one hour (`ttlSeconds` changes it). It throws `EspressoNotifyConfigError` `invalid_argument` for an empty `externalId`, `kid` or `projectId` or a key that is not a P-256 private key, and `invalid_option` for a `ttlSeconds` that is not a whole number above 0. The library signs with `node:crypto` alone and never logs the key.
+
 ## Documentation
 
 The guide, with the examples compiled against this source, is at https://docs.espressonotify.com/docs/server-libraries/node.

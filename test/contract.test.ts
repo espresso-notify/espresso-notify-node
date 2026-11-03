@@ -79,3 +79,5 @@ describe("the include list and the facade agree", () => {
     expect(facade.sort()).toEqual(listed.map((id) => methodOf[id]!).sort());
   });
 });
+
+// feature: server.notifications-send

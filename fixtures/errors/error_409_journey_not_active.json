@@ -18,7 +18,8 @@
   },
   "response": {
     "body": {
-      "error": "journey_not_api_triggered_or_inactive"
+      "code": "journey_not_api_triggered_or_inactive",
+      "error": "The journey is inactive or is not started by the API"
     },
     "headers": {
       "Content-Type": "application/json; charset=utf-8"

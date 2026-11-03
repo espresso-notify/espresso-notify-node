@@ -1,5 +1,5 @@
 {
-  "description": "The key is not one the API issued; the answer has no code.",
+  "description": "The key is not one the API issued; the answer carries the code project_token_invalid_or_revoked.",
   "key": "secret",
   "method": "POST",
   "operationId": "sendTransactional",
@@ -20,7 +20,8 @@
   },
   "response": {
     "body": {
-      "error": "Token de projeto inválido ou revogado"
+      "code": "project_token_invalid_or_revoked",
+      "error": "Project token is invalid or revoked"
     },
     "headers": {
       "Content-Type": "application/json; charset=utf-8"

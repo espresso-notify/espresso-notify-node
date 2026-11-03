@@ -10,5 +10,6 @@ export {
   type ConfigErrorCode,
   type SignatureErrorCode,
 } from "./errors";
+export { signIdentityToken, type SignIdentityTokenInput } from "./identity";
 export { verifySignature, type HeadersInput, type VerifySignatureInput } from "./signatures";
 export type * from "./types";

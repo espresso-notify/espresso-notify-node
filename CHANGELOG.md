@@ -5,6 +5,12 @@ All notable changes to `@espresso-notify/node` are written here. The format foll
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-03
+
+### Added
+
+- `signIdentityToken` signs the `ES256` identity token that your backend hands to the app, with `node:crypto` alone: the header holds the `kid`, the claims are `sub`, `aud`, `iat` and `exp` (one hour by default), and it refuses an empty id or a key that is not a P-256 private key. `fc41e1ce8`
+
 ## [0.1.1] - 2026-10-27
 
 ### Changed

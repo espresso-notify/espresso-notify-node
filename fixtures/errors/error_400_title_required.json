@@ -19,7 +19,7 @@
   "response": {
     "body": {
       "code": "title_required",
-      "error": "title is required"
+      "error": "Enter the title."
     },
     "headers": {
       "Content-Type": "application/json; charset=utf-8"

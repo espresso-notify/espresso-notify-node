@@ -120,3 +120,5 @@ describe("verifySignature: the tolerance and the clock", () => {
     expect(() => verify({ now: () => Number.NaN })).toThrow(EspressoNotifyConfigError);
   });
 });
+
+// feature: server.client

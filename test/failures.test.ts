@@ -214,3 +214,5 @@ describe("verifySignature turns every bad input into an error of the library", (
     expect(verified).toBe(0);
   });
 });
+
+// feature: server.typed-errors
