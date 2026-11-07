@@ -197,11 +197,11 @@ describe("signIdentityToken", () => {
 
 // Cross-language proof with the server (JWT-33): this test writes the token to a fixture and the Go test of the server's
 // verification package reads it and verifies it with `Verify`. ECDSA signatures are random, so the file is written when it is
-// missing or when ESPRESSO_WRITE_IDENTITY_FIXTURE=1, and every other run verifies the committed token and signs a new one with
-// the committed key; the Go side then always reads a token this test has verified.
+// missing or when ESPRESSO_WRITE_IDENTITY_FIXTURE=1. The fixture holds the public key and the token only: the file is
+// copied to the public mirror of the library, so the private key of the pair is thrown away once the token is signed
+// (CIG-09); the signing itself is proved with a pair made by this run.
 describe("identity token fixture shared with the server", () => {
   interface Fixture {
-    privateKeyPem: string;
     publicKeyPem: string;
     kid: string;
     projectId: string;
@@ -216,11 +216,11 @@ describe("identity token fixture shared with the server", () => {
     const ttlSeconds = 3600;
     const token = signIdentityToken({ privateKeyPem: fresh.privateKeyPem, kid: KID, projectId: PROJECT_ID, externalId: EXTERNAL_ID, ttlSeconds, now: at(SIGNED_AT_MS) });
     mkdirSync(dirname(FIXTURE), { recursive: true });
-    const fixture: Fixture = { ...fresh, kid: KID, projectId: PROJECT_ID, externalId: EXTERNAL_ID, signedAt: SIGNED_AT_MS / 1000, ttlSeconds, token };
+    const fixture: Fixture = { publicKeyPem: fresh.publicKeyPem, kid: KID, projectId: PROJECT_ID, externalId: EXTERNAL_ID, signedAt: SIGNED_AT_MS / 1000, ttlSeconds, token };
     writeFileSync(FIXTURE, `${JSON.stringify(fixture, null, 2)}\n`);
   }
 
-  const fixture = JSON.parse(readFileSync(FIXTURE, "utf8")) as Fixture;
+  const fixture = JSON.parse(readFileSync(FIXTURE, "utf8")) as Fixture & { privateKeyPem?: string };
 
   it("holds a token that an independent verifier accepts with every claim", () => {
     const { valid, header, claims } = verifyToken(fixture.token, createPublicKey(fixture.publicKeyPem));
@@ -229,23 +229,26 @@ describe("identity token fixture shared with the server", () => {
     expect(claims).toEqual({ sub: fixture.externalId, aud: fixture.projectId, iat: fixture.signedAt, exp: fixture.signedAt + fixture.ttlSeconds });
   });
 
-  it("holds a public key that is the pair of the private key", () => {
-    const derived = createPublicKey(fixture.privateKeyPem).export({ format: "pem", type: "spki" }).toString();
-    expect(derived).toBe(fixture.publicKeyPem);
+  it("holds no private key, since the file is published with the library", () => {
+    expect(fixture.privateKeyPem).toBeUndefined();
+    expect(readFileSync(FIXTURE, "utf8")).not.toContain("PRIVATE KEY");
   });
 
-  it("signs, with the committed private key, a token that the committed public key verifies", () => {
+  it("signs, with a pair made by this run and the claims of the fixture, the same claims the fixture token carries", () => {
+    const fresh = p256();
     const token = signIdentityToken({
-      privateKeyPem: fixture.privateKeyPem,
+      privateKeyPem: fresh.privateKeyPem,
       kid: fixture.kid,
       projectId: fixture.projectId,
       externalId: fixture.externalId,
       ttlSeconds: fixture.ttlSeconds,
       now: at(fixture.signedAt * 1000),
     });
-    const { valid, claims } = verifyToken(token, createPublicKey(fixture.publicKeyPem));
-    expect(valid).toBe(true);
-    expect(claims.exp).toBe(fixture.signedAt + fixture.ttlSeconds);
+    const mine = verifyToken(token, createPublicKey(fresh.publicKeyPem));
+    expect(mine.valid).toBe(true);
+    expect(mine.header).toEqual({ alg: "ES256", typ: "JWT", kid: fixture.kid });
+    expect(mine.claims).toEqual(verifyToken(fixture.token, createPublicKey(fixture.publicKeyPem)).claims);
+    expect(verifyToken(token, createPublicKey(fixture.publicKeyPem)).valid).toBe(false);
   });
 });
 

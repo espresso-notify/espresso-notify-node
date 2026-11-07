@@ -3,7 +3,7 @@ import { EspressoNotifyConfigError } from "./errors";
 import { assertClock, assertClockReading } from "./guards";
 
 export interface SignIdentityTokenInput {
-  /** The private key the dashboard showed once when you generated the key, as a PEM (`-----BEGIN PRIVATE KEY-----`). It stays on your server. */
+  /** The private key the dashboard showed once when you generated the key, as a PKCS#8 PEM (the text that opens with `BEGIN PRIVATE KEY`). It stays on your server. */
   privateKeyPem: string;
   /** The `kid` of that key, shown in the dashboard next to it. It travels in the header of every token. */
   kid: string;

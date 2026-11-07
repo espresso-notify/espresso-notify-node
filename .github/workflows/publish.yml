@@ -67,7 +67,7 @@ jobs:
     name: verify @espresso-notify/node
     # Without the variable NPM_PUBLISH_ENABLED the workflow does not even run (inert workflow).
     if: vars.NPM_PUBLISH_ENABLED == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     # Read only, and no environment: this job has no secret and cannot sign anything.
     permissions:
@@ -174,7 +174,7 @@ jobs:
     name: stage @espresso-notify/node
     needs: verify
     if: vars.NPM_PUBLISH_ENABLED == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # Protected environment: required reviewers and the NPM_TOKEN secret (if a token is used) live here.
     environment: npm-publish

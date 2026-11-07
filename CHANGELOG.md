@@ -5,6 +5,12 @@ All notable changes to `@espresso-notify/node` are written here. The format foll
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-06
+
+### Changed
+
+- The version moves to 0.2.0 together with the React Native SDK, the Web SDK and the new setup wizard `@espresso-notify/wizard`. The API of the library does not change.
+
 ## [0.1.2] - 2026-11-03
 
 ### Added

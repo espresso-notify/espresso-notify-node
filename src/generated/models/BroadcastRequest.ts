@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Espresso Notify API
- * The routes under `/v1` that your server and your apps call. Your server uses the secret key (`sk_live_`) for the send routes, the status route, the cancel route, conversions, journeys, users and tokens. The SDKs use the public key (`pk_live_`) for devices, web push and tracking. Preferences, categories and variables take either key.  This file describes only `/v1`. It is hand-written and a test of the backend fails when a `/v1` route is added or removed without it. The guides are at https://docs.espressonotify.com/docs/api.  Errors are a JSON body with an `error` text and, for most refusals, a stable `code`. Match on the status and on `code`, never on the text. The list of codes is in `x-error-codes`. 
+ * The routes under `/v1` that your server and your apps call. Your server uses the secret key (`sk_live_`) for the send routes, the status route, the cancel route, conversions, journeys, users and tokens. The SDKs use the public key (`pk_live_`) for devices, web push and tracking. Preferences, categories and variables take either key.  This file describes only `/v1`. The guides are at https://docs.espressonotify.com/docs/api.  Errors are a JSON body with an `error` text and, for most refusals, a stable `code`. Match on the status and on `code`, never on the text. The list of codes is in `x-error-codes`. 
  *
  * The version of the OpenAPI document: v1
  * 
@@ -20,11 +20,11 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface BroadcastRequest {
     /**
-     * Required, up to 65 bytes, except for a silent push.
+     * Required, up to 65 characters (counted in Unicode code points, so an accented letter or an emoji is one), except for a silent push.
      */
     title?: string;
     /**
-     * Required, up to 240 bytes, except for a silent push.
+     * Required, up to 240 characters (counted in Unicode code points), except for a silent push.
      */
     body?: string;
     /**
@@ -136,6 +136,14 @@ export interface BroadcastRequest {
      * Required with timezone.
      */
     delivery_hour?: number;
+    /**
+     * Limits how fast the campaign goes out, in messages a minute. Needs the plan feature; a plan without it
+     * gets 402 `plan_feature_required`. A value outside 100 to 100000, or a project whose sends the rate does
+     * not reach yet, is a 422 `invalid_send_rate`. The campaign keeps its rate to the end, even if the plan
+     * changes meanwhile. Transactional sends are never slowed by it.
+     * 
+     */
+    send_rate_per_minute?: number;
 }
 
 
@@ -213,6 +221,7 @@ export function BroadcastRequestFromJSONTyped(json: any, ignoreDiscriminator: bo
         'generic_greeting': json['generic_greeting'] == null ? undefined : json['generic_greeting'],
         'delivery_mode': json['delivery_mode'] == null ? undefined : json['delivery_mode'],
         'delivery_hour': json['delivery_hour'] == null ? undefined : json['delivery_hour'],
+        'send_rate_per_minute': json['send_rate_per_minute'] == null ? undefined : json['send_rate_per_minute'],
     };
 }
 
@@ -255,6 +264,7 @@ export function BroadcastRequestToJSONTyped(value?: BroadcastRequest | null, ign
         'generic_greeting': value['generic_greeting'],
         'delivery_mode': value['delivery_mode'],
         'delivery_hour': value['delivery_hour'],
+        'send_rate_per_minute': value['send_rate_per_minute'],
     };
 }
 

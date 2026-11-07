@@ -1,6 +1,6 @@
 {
   "name": "@espresso-notify/node",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Node.js server library for the Espresso Notify API: typed sends, retries with idempotency keys, and webhook signature verification.",
   "keywords": [
     "push-notifications",
@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/espresso-notify/espresso-notify-node/issues"
   },
-  "homepage": "https://docs.espressonotify.com/docs/server-libraries/node",
+  "homepage": "https://espressonotify.com",
   "engines": {
     "node": ">=22"
   },

@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Espresso Notify API
- * The routes under `/v1` that your server and your apps call. Your server uses the secret key (`sk_live_`) for the send routes, the status route, the cancel route, conversions, journeys, users and tokens. The SDKs use the public key (`pk_live_`) for devices, web push and tracking. Preferences, categories and variables take either key.  This file describes only `/v1`. It is hand-written and a test of the backend fails when a `/v1` route is added or removed without it. The guides are at https://docs.espressonotify.com/docs/api.  Errors are a JSON body with an `error` text and, for most refusals, a stable `code`. Match on the status and on `code`, never on the text. The list of codes is in `x-error-codes`. 
+ * The routes under `/v1` that your server and your apps call. Your server uses the secret key (`sk_live_`) for the send routes, the status route, the cancel route, conversions, journeys, users and tokens. The SDKs use the public key (`pk_live_`) for devices, web push and tracking. Preferences, categories and variables take either key.  This file describes only `/v1`. The guides are at https://docs.espressonotify.com/docs/api.  Errors are a JSON body with an `error` text and, for most refusals, a stable `code`. Match on the status and on `code`, never on the text. The list of codes is in `x-error-codes`. 
  *
  * The version of the OpenAPI document: v1
  * 
@@ -27,6 +27,10 @@ export interface QueryPreferencesRequest {
      * A device of the user. Required with the public key, optional with the secret key.
      */
     push_token?: string;
+    /**
+     * A JWT your backend signed for `external_id`, when the project asks for the proof of identity. Asked for a public-key call only: a secret-key call does not need it.
+     */
+    identity_token?: string;
 }
 
 /**
@@ -49,6 +53,7 @@ export function QueryPreferencesRequestFromJSONTyped(json: any, ignoreDiscrimina
         
         'external_id': json['external_id'],
         'push_token': json['push_token'] == null ? undefined : json['push_token'],
+        'identity_token': json['identity_token'] == null ? undefined : json['identity_token'],
     };
 }
 
@@ -65,6 +70,7 @@ export function QueryPreferencesRequestToJSONTyped(value?: QueryPreferencesReque
         
         'external_id': value['external_id'],
         'push_token': value['push_token'],
+        'identity_token': value['identity_token'],
     };
 }
 
